@@ -1,6 +1,10 @@
 ---
 title: "R Notebook"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
+  html_notebook: default
+  pdf_document: default
 ---
 
 This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
@@ -21,3 +25,26 @@ The preview shows you a rendered HTML copy of the contents of the editor. Conseq
 
 
 hahahahahah still testingggggg
+```{r test markdown}
+library(tidyverse)
+library(geojsonio)
+library(sf)
+library(tmap)
+library(tmaptools)
+
+
+LondonData <- read_csv("https://files.datapress.com/london/dataset/ward-profiles-and-atlas/2015-09-24T14:21:24/ward-profiles-excel-version.csv", na = "n/a")
+
+EW <- geojson_read("http://geoportal.statistics.gov.uk/datasets/8edafbe3276d4b56aec60991cbddda50_2.geojson", what = "sp")
+LondonMap <- EW[grep('^E09',EW@data$lad15cd),]
+LondonMapSF <- st_as_sf(LondonMap)
+#append the data to the geometries
+LondonMapSF <- append_data(LondonMapSF,LondonData, key.shp = "lad15cd", key.data = "NewCode", ignore.duplicates = TRUE)
+#plot a choropleth
+qtm(LondonMapSF, fill = "RateOfNot.BornInUK_2011")
+tmap_options(max.categories = 8)
+
+install.packages("citr")
+library(citr)
+
+```
