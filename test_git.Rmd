@@ -14,7 +14,7 @@ Try executing this chunk by clicking the *Run* button within the chunk or by pla
 This is a nootbook a a a a from dan.
 
 ```{r}
-plot(cars)
+
 ```
 
 Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
@@ -46,5 +46,6 @@ tmap_options(max.categories = 8)
 
 install.packages("citr")
 library(citr)
+library(stringi)
 
 ```
