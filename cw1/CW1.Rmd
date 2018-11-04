@@ -1,0 +1,57 @@
+---
+title: "cw1_Rmarkdown_map"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Command Line Map
+```{r}
+library(tidyverse)
+library(geojsonio)
+library(sf)
+library(tmap)
+library(tmaptools)
+LondonData <- read.csv("N:\\GIS\\coursework1\\LondonData.csv", header = TRUE, sep = ",")
+EnglandMap <- read_shape("N:\\GIS\\coursework1\\r_markdown\\BoundaryDataEnglandRegions\\england_gor_2011.shp", as.sf = TRUE)
+qtm(EnglandMap)
+AccomodationData <- read_csv("N:\\GIS\\coursework1\\r_markdown\\accomodation\\Data_ACCTYP_UNIT.csv")
+library(rjson)
+
+EnglandLadDataSF <- read_shape("N:\\GIS\\coursework1\\r_markdown\\BoundaryDataUAandLondon\\england_lad_2011.shp", as.sf = TRUE)
+qtm(EnglandLadDataSF)
+
+EnglandQualificationData <- read.csv("N:\\GIS\\coursework1\\r_markdown\\levelOfQulification\\Data_AGE_ECOACT_HIQUAL_UNIT.csv")
+
+Englandlevel4quaData <- read.csv("N:\\GIS\\coursework1\\r_markdown\\levelOfQulification\\Data_qualification4.csv")
+library(methods)
+class(EnglandQualificationData)
+
+EnglandQuaMap <- append_data(EnglandLadDataSF, Englandlevel4quaData, key.shp = "code", key.data ="GEO_CODE", ignore.duplicates = TRUE )
+
+library(tmaptools)
+
+tmap_mode("plot")
+qtm(EnglandQuaMap, fill = "Age16to64EconomicActivity_.Level4qualifications")
+
+london_osm <- read_osm(EnglandQuaMap, type = "esri", zoom = NULL)
+qtm(london_osm) + 
+  tm_shape(EnglandQuaMap) + 
+  tm_polygons("Age16to64EconomicActivity_.Level4qualifications", 
+        style="jenks",
+        palette="YlOrBr",
+        midpoint=NA,
+        title="Number of people have level 4 qualification ",
+        alpha = 1.0) + 
+  tm_compass(position = c("right", "bottom"),type = "arrow") + 
+  tm_scale_bar(position = c("right", "bottom")) +
+  tm_layout(title = "Residents' Qualification Level in England", legend.position = c("left", "bottom"))
+
+
+```
+
+
+
+
