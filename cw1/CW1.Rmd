@@ -1,5 +1,6 @@
 ---
-title: "cw1_Rmarkdown_map"
+title: "cw1_Assessment Part 1"
+author: "Dan Zhang"
 output: html_document
 ---
 
@@ -7,27 +8,28 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Command Line Map
-```{r}
+## Command line based map
+The first map was England residents' qualification level in 2011, which produced in R Studio. It is a command line based software.
+
+### Data sources and work flow
+
+To make the map, the boundary data of England authority districts was first downloaded from the Office for National Statistics (2018). In addition, 2011 census aggregate data, which available from UK Data Service (2016) was read and imported to the R environment by using read.csv function. Then, the attribute data was joined into the boundaries with SF by find the same value in both dataset. After that, the tmap packages was installed in order to make maps. To improve the creativity, the base map (Open Street Map) and some tmap tools such as layout, symbol, compass and scale bar were also added and positioned in the appropriate location. 
+
+
+```{r rstudio_command line based}
 library(tidyverse)
 library(geojsonio)
 library(sf)
 library(tmap)
 library(tmaptools)
-LondonData <- read.csv("N:\\GIS\\coursework1\\LondonData.csv", header = TRUE, sep = ",")
-EnglandMap <- read_shape("N:\\GIS\\coursework1\\r_markdown\\BoundaryDataEnglandRegions\\england_gor_2011.shp", as.sf = TRUE)
-qtm(EnglandMap)
-AccomodationData <- read_csv("N:\\GIS\\coursework1\\r_markdown\\accomodation\\Data_ACCTYP_UNIT.csv")
 library(rjson)
 
 EnglandLadDataSF <- read_shape("N:\\GIS\\coursework1\\r_markdown\\BoundaryDataUAandLondon\\england_lad_2011.shp", as.sf = TRUE)
 qtm(EnglandLadDataSF)
 
-EnglandQualificationData <- read.csv("N:\\GIS\\coursework1\\r_markdown\\levelOfQulification\\Data_AGE_ECOACT_HIQUAL_UNIT.csv")
 
 Englandlevel4quaData <- read.csv("N:\\GIS\\coursework1\\r_markdown\\levelOfQulification\\Data_qualification4.csv")
 library(methods)
-class(EnglandQualificationData)
 
 EnglandQuaMap <- append_data(EnglandLadDataSF, Englandlevel4quaData, key.shp = "code", key.data ="GEO_CODE", ignore.duplicates = TRUE )
 
@@ -36,6 +38,7 @@ library(tmaptools)
 tmap_mode("plot")
 qtm(EnglandQuaMap, fill = "Age16to64EconomicActivity_.Level4qualifications")
 
+
 london_osm <- read_osm(EnglandQuaMap, type = "esri", zoom = NULL)
 qtm(london_osm) + 
   tm_shape(EnglandQuaMap) + 
@@ -43,15 +46,45 @@ qtm(london_osm) +
         style="jenks",
         palette="YlOrBr",
         midpoint=NA,
-        title="Number of people have level 4 qualification ",
+        title="Number of people have level 4+ qualification ",
         alpha = 1.0) + 
   tm_compass(position = c("right", "bottom"),type = "arrow") + 
   tm_scale_bar(position = c("right", "bottom")) +
-  tm_layout(title = "Residents' Qualification Level in England", legend.position = c("left", "bottom"))
-
-
+  tm_layout(title = "Residents' Qualification Level in England", legend.position = c("left", "center"))
 ```
 
 
+### Analysis of command line based map
+
+The map indicated the qualification level in England in 2011 through compared the number of residents who had level 4+ qualifications (undergraduate and above). According to the map it can be seen that the London and its surrounding area showed a high dense of residents who held the level 4 + qualifications in 2011, which demonstrated a lower uneven distribution of education level than other parts of England. Noticeably, there were several districts had much more population who held the undergraduate or higher qualification than its surrounding areas such as Leeds. Sheffield, Birmingham, Durham and Liverpool et, al. Except the total population differences, this could also explained by the number of university or college located in the districts. 
+
+
+## Geographic User Interface(GUI) based map
+
+Arc GIS is quite user friendly and visually intuitive when creating maps, and a more flexible tools for producing maps.In addition, its groprocessing tools such as clip and buffer enable users to do more advanced spatial analysis. 
+
+The 2016 High Speed Rail Development in China was made by Geographic User Interface tool (Arc GIS). 
+
+### Data sources and work flow
+To get start,the map was defined by using projected coordinate system WGS 84. To create the map, the boundary data (polygon data) of China and every province was downloaded from the World Map was added. 
+Then, GDP data by province in 2016 in China which downloaded from National Bureau of Statistics of China was joined to the attribute table of boundary layer by using add join function. 
+After joined the data, the symbology tools were used to make choropleth layer of GDP performance in each province. Besides, the high-speed rail lines and stations data was downloaded from the World Map (2016) and symbolled to be visualized. Finally, the legend, map sources, title, north arrow and scale were added to finish the map.   
+
+
+![High-speed rail development in China 2016](N:/GIS/GIS_code_github/cw1/cw1map.png)
+
+
+### Analysis of GUI based map
+The map which made by Arc GIS demonstrated the relationship between the economy status and high-speed railway distributions of each province in China in 2016. It can be seen clearly from the map that the development of high-speed rail station and line was unequally distributed based on their economic performance. The east and south provinces had relatively higher GDP compared with the west and north part in China, especially the coastal provinces such as Jiangsu, Guangdong and Shandong provinces. And the provinces which had better GDP performance tended to locate more high-speed rail stations and lines.
+
+
+## References
+National Bureau of Statistics of China (n.d.) 'GDP by province 2016' [Online]. Available from:  http://data.stats.gov.cn/easyquery.htm?cn=E0103 (Accessed: 3 Nov 2018).
+
+Office for National Statistics (2018) 'Local Authority Districts (December 2011) In Great Britain' [Online]. Available from: http://geoportal.statistics.gov.uk/ (Accessed: 3 Nov 2018).
+
+WorldMap (2016) 'High speed railway lines', [Online]. Available from: http://worldmap.harvard.edu/data/geonode:high_speed_rail_lines_2016_40k (Accessed: 3 Nov 2018).
+
+WorldMap (2016) 'High speed rail stations', [Online]. Available from: http://worldmap.harvard.edu/data/geonode:high_speed_rail_stations_2016_who (Accessed: 3 Nov 2018).
 
 
